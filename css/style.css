@@ -1,0 +1,76 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+  
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+  
+.grid {
+  display: grid;
+  gap: 1px;
+}
+
+.grid-and-row-container {
+  display: flex;
+}
+  
+.cell {
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  cursor: pointer;
+  border: #000 2px solid;
+}
+
+.cell-clue {
+  width: 30px;
+  height: 30px;
+  background-color: white;
+  border: #c0bdbd 1px solid;
+  text-align: center;
+}
+  
+.cell.filled {
+  background-color: black;
+}
+  
+.clues {
+  display: grid;
+  gap: 1px;
+}
+
+.clue-container{
+  display: flex;
+}
+
+.clue-container_column {
+  flex-direction: column;
+  align-items: center;
+}
+
+.clue-container_row {
+  justify-content: flex-end;
+}
+  
+.clues .column-clues,
+.clues .row-clues {
+  /* display: grid; */
+}
+
+.row-clues {
+  flex-direction: column;
+  
+}
