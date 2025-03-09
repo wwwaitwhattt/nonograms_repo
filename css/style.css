@@ -5,6 +5,14 @@ body {
   align-items: center;
   background-color: #f0f0f0;
 }
+
+.game-page{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 30px;
+}
   
 .game-container {
   display: flex;
@@ -20,8 +28,8 @@ body {
 }
 
 .description-container {
-  margin-bottom: 30px;
-  margin-top: 30px;
+  /* margin-bottom: 20px;
+  margin-top: 30px; */
 }
 
 .title{
@@ -56,17 +64,13 @@ body {
 }
 
 .button-clear {
-  margin-bottom: 20px;
-  margin-top: 20px;
+  /* margin-bottom: 20px;
+  margin-top: 20px; */
 }
 
 .solutions-container{
   display: flex;
   gap: 15px;
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
   
 .grid {
