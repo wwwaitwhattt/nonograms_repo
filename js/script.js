@@ -1,14 +1,33 @@
-const solution = [
-  [1, 0, 1, 0, 1],
-  [0, 0, 1, 0, 0],
-  [1, 0, 0, 0, 1],
-  [0, 0, 1, 0, 0],
-  [1, 1, 1, 1, 1],
+const solutions = [
+  [
+    [1, 0, 1, 0, 1],
+    [0, 0, 1, 0, 0],
+    [1, 0, 0, 0, 1],
+    [0, 0, 1, 0, 0],
+    [1, 1, 1, 1, 1],
+  ],
+  [
+    [1, 1, 0, 0, 1],
+    [0, 1, 0, 1, 0],
+    [1, 0, 1, 0, 1],
+    [0, 1, 0, 1, 0],
+    [1, 0, 0, 0, 1],
+  ],
+  [
+    [0, 1, 0, 1, 0],
+    [1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1],
+    [0, 1, 1, 1, 0],
+    [0, 0, 1, 0, 0],
+  ],
 ];
 
 const size = 5; 
 
 document.addEventListener("DOMContentLoaded", () => { 
+  const pageContainer = document.createElement("section");
+  pageContainer.className = "game-page";
+
    // контейнер с правилами
   const descriptionContainer = document.createElement("div");
   descriptionContainer.className = "description-container container";
@@ -31,10 +50,30 @@ document.addEventListener("DOMContentLoaded", () => {
   clearButton.id = "buttonClear";
   clearButton.addEventListener("click", clearAll);
 
+  // выбор картинки
+  const buttonContainer = document.createElement("div");
+  buttonContainer.className = "solutions-container container";
+
+  solutions.forEach((solution, index) => {
+    const button = document.createElement("button");
+    button.className = "button button-solution";
+    button.addEventListener("click", () => updateGame(solution));
+    buttonContainer.appendChild(button);
+  });
+
+
   descriptionContainer.appendChild(titleRules);
   descriptionContainer.appendChild(textRules);
+
   document.body.appendChild(descriptionContainer);
+  document.body.appendChild(buttonContainer);
   document.body.appendChild(clearButton);
+
+  pageContainer.appendChild(descriptionContainer);
+  pageContainer.appendChild(buttonContainer);
+  pageContainer.appendChild(clearButton);
+
+  document.body.appendChild(pageContainer);
   
   // контейнер с игрой
   const gameContainer = document.createElement("div");
@@ -43,8 +82,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const gridAndRowContainer = document.createElement("div");
   gridAndRowContainer.className = "grid-and-row-container";
 
-  const rowClues = createRowClues(size, solution);
-  const columnClues = createColumnClues(size, solution);
+  const rowClues = createRowClues(size, solutions[0]);
+  const columnClues = createColumnClues(size, solutions[0]);
   const grid = createGrid(size);
 
   gameContainer.appendChild(columnClues);
@@ -52,8 +91,50 @@ document.addEventListener("DOMContentLoaded", () => {
   gridAndRowContainer.appendChild(grid);
   gameContainer.appendChild(gridAndRowContainer);
   document.body.appendChild(gameContainer);
+
+  pageContainer.appendChild(gameContainer);
+
   
+  updateGame(solutions[0]);
+
   // проверка решения
+  // const cells = document.querySelectorAll(".cell");
+  // cells.forEach((cell) => {
+  //   cell.addEventListener("click", () => {
+  //     cell.classList.toggle("filled");
+  //     const currentGridState = getCurrentGridState(size);
+  //     if (checkWin(solutions[0], currentGridState)) {
+  //       alert("Great! You have solved the nonogram!");
+  //     }
+  //   });
+  // });
+});
+
+function updateGame(solution) {
+  // Очищаем текущую сетку
+  const grid = document.querySelector(".grid");
+  grid.innerHTML = "";
+
+  // создаем новую сетку
+  for (let i = 0; i < size * size; i++) {
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    grid.appendChild(cell);
+  }
+
+  // обновляем подсказки для строк и столбцов
+  const rowClues = document.querySelector(".row-clues");
+  const columnClues = document.querySelector(".column-clues");
+
+  rowClues.innerHTML = "";
+  columnClues.innerHTML = "";
+
+  const newRowClues = createRowClues(size, solution);
+  const newColumnClues = createColumnClues(size, solution);
+
+  rowClues.appendChild(newRowClues);
+  columnClues.appendChild(newColumnClues);
+
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => {
     cell.addEventListener("click", () => {
@@ -64,7 +145,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   });
-});
+}
 
 function clearAll(){
   const cells = document.querySelectorAll(".cell");
@@ -158,16 +239,14 @@ function createRowClues(size, solution) {
     rowClues.appendChild(clueContainer);
   });
 
-
-  
-
   return rowClues;
 }
 
-function createColumnClues(size) {
+function createColumnClues(size, solution) {
   const columnClues = document.createElement("div");
   columnClues.className = "clues column-clues";
   columnClues.style.gridTemplateColumns = `repeat(${size}, 30px)`;
+
   const clues = findColumnClues(solution);
 
   clues.forEach((clue) => {
@@ -195,5 +274,6 @@ function checkWin(solution, currentGridState) {
       }
     }
   }
+
   return true;
 }
