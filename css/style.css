@@ -1,21 +1,62 @@
 body {
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f0f0f0;
 }
   
 .game-container {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+}
+
+.container {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.description-container {
+  margin-bottom: 30px;
+  margin-top: 30px;
+}
+
+.title{
+  text-align: center;
+  font-weight: 700;
+}
+
+.rules-title {
+  padding-bottom: 5px;
+}
+
+.text{
+  text-align: justify;
+  line-height: 120%;
+}
+
+.rules-text{
+  white-space: pre-line;
+}
+
+.button {
+  background-color: white;
+  padding: 10px;
+  border: #00000021 1px solid;
+  border-radius: 5px;
+  box-shadow: 0 0 10px #0000001a;
+  cursor: pointer;
+}
+
+.button:hover{
+  background-color: #f5f2f2;
+}
+
+.button-clear {
+  margin-bottom: 20px;
 }
   
 .grid {
@@ -36,11 +77,13 @@ body {
 }
 
 .cell-clue {
+  display: flex;
   width: 30px;
   height: 30px;
   background-color: white;
   border: #c0bdbd 1px solid;
-  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
   
 .cell.filled {
@@ -58,19 +101,13 @@ body {
 
 .clue-container_column {
   flex-direction: column;
-  align-items: center;
+  justify-content: flex-end;
 }
 
 .clue-container_row {
   justify-content: flex-end;
 }
-  
-.clues .column-clues,
-.clues .row-clues {
-  /* display: grid; */
-}
 
 .row-clues {
   flex-direction: column;
-  
 }

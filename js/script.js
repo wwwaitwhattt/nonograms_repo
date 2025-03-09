@@ -3,14 +3,39 @@ const solution = [
   [0, 0, 1, 0, 0],
   [1, 0, 0, 0, 1],
   [0, 0, 1, 0, 0],
-  [1, 0, 0, 0, 1],
+  [1, 1, 1, 1, 1],
 ];
 
-document.addEventListener("DOMContentLoaded", () => {
-  const size = 5; 
+const size = 5; 
+
+document.addEventListener("DOMContentLoaded", () => { 
+  const descriptionContainer = document.createElement("div");
+  descriptionContainer.className = "description-container container";
+
+  const titleRules = document.createElement("div");
+  titleRules.className = "rules-title title";
+  titleRules.textContent = "RULES";
+
+  const textRules = document.createElement("div");
+  textRules.className = "rules-text text"
+  textRules.textContent = `• You have a grid of squares, which must be filled in black.
+  • Beside each row of the grid are listed the lengths of black squares on that row.
+  • Between each length, there must be at least one empty square.
+  • Your aim is to find all black squares.`;
+
+  const clearButton = document.createElement("button");
+  clearButton.className = "button button-clear";
+  clearButton.textContent = "CLEAR";
+  clearButton.id = "buttonClear";
+  clearButton.addEventListener("click", clearAll);
+
+  descriptionContainer.appendChild(titleRules);
+  descriptionContainer.appendChild(textRules);
+  document.body.appendChild(descriptionContainer);
+  document.body.appendChild(clearButton);
   
   const gameContainer = document.createElement("div");
-  gameContainer.className = "game-container";
+  gameContainer.className = "game-container container";
   
   const gridAndRowContainer = document.createElement("div");
   gridAndRowContainer.className = "grid-and-row-container";
@@ -36,6 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
+
+function clearAll(){
+  const cells = document.querySelectorAll(".cell");
+  cells.forEach((cell) => {
+    cell.classList.remove("filled");
+  });
+}
 
 function createGrid(size) {
   const grid = document.createElement("div");
