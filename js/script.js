@@ -9,6 +9,7 @@ const solution = [
 const size = 5; 
 
 document.addEventListener("DOMContentLoaded", () => { 
+   // контейнер с правилами
   const descriptionContainer = document.createElement("div");
   descriptionContainer.className = "description-container container";
 
@@ -23,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   • Between each length, there must be at least one empty square.
   • Your aim is to find all black squares.`;
 
+  // кнопка очистить
   const clearButton = document.createElement("button");
   clearButton.className = "button button-clear";
   clearButton.textContent = "CLEAR";
@@ -34,6 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.body.appendChild(descriptionContainer);
   document.body.appendChild(clearButton);
   
+  // контейнер с игрой
   const gameContainer = document.createElement("div");
   gameContainer.className = "game-container container";
   
@@ -50,6 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
   gameContainer.appendChild(gridAndRowContainer);
   document.body.appendChild(gameContainer);
   
+  // проверка решения
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => {
     cell.addEventListener("click", () => {
