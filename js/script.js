@@ -57,6 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   solutions.forEach((solution, index) => {
     const button = document.createElement("button");
     button.className = "button button-solution";
+    button.textContent = `picture ${index + 1}`;
     button.addEventListener("click", () => updateGame(solution));
     buttonContainer.appendChild(button);
   });
@@ -94,24 +95,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   pageContainer.appendChild(gameContainer);
 
-  
   updateGame(solutions[0]);
-
-  // проверка решения
-  // const cells = document.querySelectorAll(".cell");
-  // cells.forEach((cell) => {
-  //   cell.addEventListener("click", () => {
-  //     cell.classList.toggle("filled");
-  //     const currentGridState = getCurrentGridState(size);
-  //     if (checkWin(solutions[0], currentGridState)) {
-  //       alert("Great! You have solved the nonogram!");
-  //     }
-  //   });
-  // });
 });
 
 function updateGame(solution) {
-  // Очищаем текущую сетку
+  // очищаем текущую сетку
   const grid = document.querySelector(".grid");
   grid.innerHTML = "";
 

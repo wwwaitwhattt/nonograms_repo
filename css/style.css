@@ -27,11 +27,6 @@ body {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.description-container {
-  /* margin-bottom: 20px;
-  margin-top: 30px; */
-}
-
 .title{
   text-align: center;
   font-weight: 700;
@@ -61,11 +56,6 @@ body {
 
 .button:hover{
   background-color: #f5f2f2;
-}
-
-.button-clear {
-  /* margin-bottom: 20px;
-  margin-top: 20px; */
 }
 
 .solutions-container{
