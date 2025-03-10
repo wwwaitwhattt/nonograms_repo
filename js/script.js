@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const pageContainer = document.createElement("section");
   pageContainer.className = "game-page";
 
-   // контейнер с правилами
+  // контейнер с правилами
   const descriptionContainer = document.createElement("div");
   descriptionContainer.className = "description-container container";
 
@@ -95,6 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   pageContainer.appendChild(gameContainer);
 
+  // запускаем игру с первой картинкой
   updateGame(solutions[0]);
 });
 
@@ -126,10 +127,26 @@ function updateGame(solution) {
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => {
     cell.addEventListener("click", () => {
-      cell.classList.toggle("filled");
+      if (cell.classList.contains("crossed")) {
+        cell.classList.remove("crossed");
+        cell.classList.add("filled");
+      } else {
+        cell.classList.toggle("filled");
+      }
       const currentGridState = getCurrentGridState(size);
       if (checkWin(solution, currentGridState)) {
         alert("Great! You have solved the nonogram!");
+      }
+    });
+    // крестик, при нажатии правой кнопки мыши
+    cell.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+
+      if (cell.classList.contains("filled")) {
+        cell.classList.remove("filled");
+        cell.classList.add("crossed");
+      } else {
+        cell.classList.toggle("crossed");
       }
     });
   });
