@@ -24,30 +24,46 @@ const solutions = [
 
 const size = 5; 
 
-document.addEventListener("DOMContentLoaded", () => { 
-  const pageContainer = document.createElement("section");
-  pageContainer.className = "game-page";
-
-  // контейнер с правилами
+// контейнер с правилами
+function createRules(){
   const descriptionContainer = document.createElement("div");
   descriptionContainer.className = "description-container container";
 
   const titleRules = document.createElement("div");
   titleRules.className = "rules-title title";
-  titleRules.textContent = "RULES";
+  titleRules.textContent = "Rules";
 
-  const textRules = document.createElement("div");
+  const textRules = document.createElement("ul");
   textRules.className = "rules-text text"
-  textRules.textContent = `• You have a grid of squares, which must be filled in black.
-  • Beside each row of the grid are listed the lengths of black squares on that row.
-  • Between each length, there must be at least one empty square.
-  • Your aim is to find all black squares.`;
+
+  const rules = [
+    "You have a grid of squares, which must be filled in black.",
+    "Beside each row of the grid are listed the lengths of black squares on that row.",
+    "Between each length, there must be at least one empty square.",
+    "Your aim is to find all black squares."
+  ];
+
+  rules.forEach(ruleText => {
+    const rule = document.createElement("li");
+    rule.textContent = ruleText;
+    textRules.append(rule)
+  })
+
+  descriptionContainer.append(titleRules);
+  descriptionContainer.append(textRules);
+  document.body.append(descriptionContainer);
+}
+
+document.addEventListener("DOMContentLoaded", () => { 
+  const pageContainer = document.createElement("section");
+  pageContainer.className = "game-page";
+
+  createRules();
 
   // кнопка очистить
   const clearButton = document.createElement("button");
   clearButton.className = "button button-clear";
-  clearButton.textContent = "CLEAR";
-  clearButton.id = "buttonClear";
+  clearButton.textContent = "Clear";
   clearButton.addEventListener("click", clearAll);
 
   // выбор картинки
@@ -62,19 +78,10 @@ document.addEventListener("DOMContentLoaded", () => {
     buttonContainer.appendChild(button);
   });
 
+  pageContainer.append(buttonContainer);
+  pageContainer.append(clearButton);
 
-  descriptionContainer.appendChild(titleRules);
-  descriptionContainer.appendChild(textRules);
-
-  document.body.appendChild(descriptionContainer);
-  document.body.appendChild(buttonContainer);
-  document.body.appendChild(clearButton);
-
-  pageContainer.appendChild(descriptionContainer);
-  pageContainer.appendChild(buttonContainer);
-  pageContainer.appendChild(clearButton);
-
-  document.body.appendChild(pageContainer);
+  document.body.append(pageContainer);
   
   // контейнер с игрой
   const gameContainer = document.createElement("div");
@@ -87,13 +94,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const columnClues = createColumnClues(size, solutions[0]);
   const grid = createGrid(size);
 
-  gameContainer.appendChild(columnClues);
-  gridAndRowContainer.appendChild(rowClues);
-  gridAndRowContainer.appendChild(grid);
-  gameContainer.appendChild(gridAndRowContainer);
-  document.body.appendChild(gameContainer);
+  gameContainer.append(columnClues);
+  gridAndRowContainer.append(rowClues);
+  gridAndRowContainer.append(grid);
+  gameContainer.append(gridAndRowContainer);
 
-  pageContainer.appendChild(gameContainer);
+  pageContainer.append(gameContainer);
 
   // запускаем игру с первой картинкой
   updateGame(solutions[0]);
@@ -108,7 +114,7 @@ function updateGame(solution) {
   for (let i = 0; i < size * size; i++) {
     const cell = document.createElement("div");
     cell.className = "cell";
-    grid.appendChild(cell);
+    grid.append(cell);
   }
 
   // обновляем подсказки для строк и столбцов
@@ -135,13 +141,12 @@ function updateGame(solution) {
       }
       const currentGridState = getCurrentGridState(size);
       if (checkWin(solution, currentGridState)) {
-        alert("Great! You have solved the nonogram!");
+        setTimeout(() => alert("Great! You have solved the nonogram!"), 0);
       }
     });
     // крестик, при нажатии правой кнопки мыши
     cell.addEventListener("contextmenu", (event) => {
       event.preventDefault();
-
       if (cell.classList.contains("filled")) {
         cell.classList.remove("filled");
         cell.classList.add("crossed");
@@ -149,13 +154,14 @@ function updateGame(solution) {
         cell.classList.toggle("crossed");
       }
     });
-  });
+  }); 
 }
 
 function clearAll(){
   const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => {
     cell.classList.remove("filled");
+    cell.classList.remove("crossed");
   });
 }
 
@@ -211,12 +217,11 @@ function findColumnClues(solution) {
 function getCurrentGridState(size) {
   const gridState = [];
   const cells = document.querySelectorAll(".cell");
-
-  for (let i = 0; i < size; i++) {
-    gridState[i] = [];
-    for (let j = 0; j < size; j++) {
-      const cell = cells[i * size + j];
-      gridState[i][j] = cell.classList.contains("filled") ? 1 : 0;  
+  for (let row = 0; row < size; row++) {
+    gridState[row] = [];
+    for (let col = 0; col < size; col++) {
+      const cell = cells[row * size + col];
+      gridState[row][col] = cell.classList.contains("filled") ? 1 : 0;  
     }
   }
 

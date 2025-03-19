@@ -33,6 +33,7 @@ body {
 }
 
 .rules-title {
+  text-transform: uppercase;
   padding-bottom: 5px;
 }
 
@@ -52,6 +53,7 @@ body {
   border-radius: 5px;
   box-shadow: 0 0 10px #0000001a;
   cursor: pointer;
+  text-transform: uppercase;
 }
 
 .button:hover{
