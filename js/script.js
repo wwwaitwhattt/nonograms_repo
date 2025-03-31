@@ -26,10 +26,10 @@ const size = 5;
 
 // контейнер с правилами
 function createRules(){
-  const descriptionContainer = document.createElement("div");
+  const descriptionContainer = document.createElement("section");
   descriptionContainer.className = "description-container container";
 
-  const titleRules = document.createElement("div");
+  const titleRules = document.createElement("h1");
   titleRules.className = "rules-title title";
   titleRules.textContent = "Rules";
 
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const button = document.createElement("button");
     button.className = "button button-solution";
     button.textContent = `picture ${index + 1}`;
-    button.addEventListener("click", () => updateGame(solution));
+    button.addEventListener("click", () => updateGame(solution))
     buttonContainer.appendChild(button);
   });
 
@@ -106,31 +106,26 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function updateGame(solution) {
-  // очищаем текущую сетку
-  const grid = document.querySelector(".grid");
-  grid.innerHTML = "";
-
-  // создаем новую сетку
-  for (let i = 0; i < size * size; i++) {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    grid.append(cell);
-  }
+  // очищаем поле
+  const cells = document.querySelectorAll(".cell");
+  cells.forEach((cell) => {
+    cell.classList.remove("crossed");
+    cell.classList.remove("filled");
+  })
 
   // обновляем подсказки для строк и столбцов
-  const rowClues = document.querySelector(".row-clues");
-  const columnClues = document.querySelector(".column-clues");
+  document.querySelector(".row-clues").remove();
+  document.querySelector(".column-clues").remove();
 
-  rowClues.innerHTML = "";
-  columnClues.innerHTML = "";
+  const rowClues = createRowClues(size, solution);
+  const columnClues = createColumnClues(size, solution);
 
-  const newRowClues = createRowClues(size, solution);
-  const newColumnClues = createColumnClues(size, solution);
+  const gameContainer = document.querySelector('.game-container');
+  const gridAndRowContainer = document.querySelector('.grid-and-row-container');
 
-  rowClues.appendChild(newRowClues);
-  columnClues.appendChild(newColumnClues);
+  gameContainer.prepend(columnClues);
+  gridAndRowContainer.prepend(rowClues); 
 
-  const cells = document.querySelectorAll(".cell");
   cells.forEach((cell) => {
     cell.addEventListener("click", () => {
       if (cell.classList.contains("crossed")) {
@@ -215,17 +210,13 @@ function findColumnClues(solution) {
 }
 
 function getCurrentGridState(size) {
-  const gridState = [];
   const cells = document.querySelectorAll(".cell");
-  for (let row = 0; row < size; row++) {
-    gridState[row] = [];
-    for (let col = 0; col < size; col++) {
-      const cell = cells[row * size + col];
-      gridState[row][col] = cell.classList.contains("filled") ? 1 : 0;  
-    }
-  }
-
-  return gridState;
+  
+  return Array.from({ length: size }, (_, row) =>
+    Array.from({ length: size }, (_, col) =>
+      cells[row * size + col].classList.contains("filled") ? 1 : 0
+    )
+  );
 }
 
 function createRowClues(size, solution) {

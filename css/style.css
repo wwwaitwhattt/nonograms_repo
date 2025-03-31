@@ -6,6 +6,18 @@ body {
   background-color: #f0f0f0;
 }
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6{
+    font-weight: inherit;
+    font-size: inherit;
+    margin: 0px;
+    padding: 0px;
+}
+
 .game-page{
   display: flex;
   flex-direction: column;
@@ -34,7 +46,6 @@ body {
 
 .rules-title {
   text-transform: uppercase;
-  padding-bottom: 5px;
 }
 
 .text{
@@ -67,7 +78,6 @@ body {
   
 .grid {
   display: grid;
-  gap: 1px;
 }
 
 .grid-and-row-container {
@@ -107,7 +117,6 @@ body {
   
 .clues {
   display: grid;
-  gap: 1px;
 }
 
 .clue-container{
