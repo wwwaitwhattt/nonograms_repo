@@ -28,48 +28,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const pageContainer = document.createElement("section");
   pageContainer.className = "game-page";
 
+  // контейнер с правилами
   createRules();
 
   // кнопка очистить
-  const clearButton = document.createElement("button");
-  clearButton.className = "button button-clear";
-  clearButton.textContent = "Clear";
-  clearButton.addEventListener("click", clearAll);
-
-  // выбор картинки
-  const buttonContainer = document.createElement("div");
-  buttonContainer.className = "solutions-container container";
-
-  solutions.forEach((solution, index) => {
-    const button = document.createElement("button");
-    button.className = "button button-solution";
-    button.textContent = `picture ${index + 1}`;
-    button.addEventListener("click", () => updateGame(solution))
-    buttonContainer.appendChild(button);
-  });
-
-  pageContainer.append(buttonContainer);
+  const clearButton = createButtonClear();
   pageContainer.append(clearButton);
 
-  document.body.append(pageContainer);
-  
+  // выбор картинки
+  const buttonContainer = createButtonContainer(); 
+  pageContainer.append(buttonContainer);
+
   // контейнер с игрой
-  const gameContainer = document.createElement("div");
-  gameContainer.className = "game-container container";
-  
-  const gridAndRowContainer = document.createElement("div");
-  gridAndRowContainer.className = "grid-and-row-container";
-
-  const rowClues = createClues('row', size, solutions[0]);
-  const columnClues = createClues('column', size, solutions[0]);
-  const grid = createGrid(size);
-
-  gameContainer.append(columnClues);
-  gridAndRowContainer.append(rowClues);
-  gridAndRowContainer.append(grid);
-  gameContainer.append(gridAndRowContainer);
-
+  const gameContainer = createGameContainer();
   pageContainer.append(gameContainer);
+
+  document.body.append(pageContainer);
 
   // запускаем игру с первой картинкой
   updateGame(solutions[0]);
@@ -103,6 +77,48 @@ function createRules(){
   descriptionContainer.append(titleRules);
   descriptionContainer.append(textRules);
   document.body.append(descriptionContainer);
+}
+
+function createButtonClear(){
+  const clearButton = document.createElement("button");
+  clearButton.className = "button button-clear";
+  clearButton.textContent = "Clear";
+  clearButton.addEventListener("click", clearAll);
+  return clearButton
+}
+
+function createButtonContainer() {
+  const buttonContainer = document.createElement("div");
+  buttonContainer.className = "solutions-container container";
+
+  solutions.forEach((solution, index) => {
+    const button = document.createElement("button");
+    button.className = "button button-solution";
+    button.textContent = `picture ${index + 1}`;
+    button.addEventListener("click", () => updateGame(solution))
+    buttonContainer.appendChild(button);
+  });
+
+  return buttonContainer
+}
+
+function createGameContainer(){
+  const gameContainer = document.createElement("div");
+  gameContainer.className = "game-container container";
+  
+  const gridAndRowContainer = document.createElement("div");
+  gridAndRowContainer.className = "grid-and-row-container";
+
+  const rowClues = createClues('row', size, solutions[0]);
+  const columnClues = createClues('column', size, solutions[0]);
+  const grid = createGrid(size);
+
+  gameContainer.append(columnClues);
+  gridAndRowContainer.append(rowClues);
+  gridAndRowContainer.append(grid);
+  gameContainer.append(gridAndRowContainer);
+
+  return gameContainer
 }
 
 function updateGame(solution) {
