@@ -24,36 +24,6 @@ const solutions = [
 
 const size = 5; 
 
-// контейнер с правилами
-function createRules(){
-  const descriptionContainer = document.createElement("section");
-  descriptionContainer.className = "description-container container";
-
-  const titleRules = document.createElement("h1");
-  titleRules.className = "rules-title title";
-  titleRules.textContent = "Rules";
-
-  const textRules = document.createElement("ul");
-  textRules.className = "rules-text text"
-
-  const rules = [
-    "You have a grid of squares, which must be filled in black.",
-    "Beside each row of the grid are listed the lengths of black squares on that row.",
-    "Between each length, there must be at least one empty square.",
-    "Your aim is to find all black squares."
-  ];
-
-  rules.forEach(ruleText => {
-    const rule = document.createElement("li");
-    rule.textContent = ruleText;
-    textRules.append(rule)
-  })
-
-  descriptionContainer.append(titleRules);
-  descriptionContainer.append(textRules);
-  document.body.append(descriptionContainer);
-}
-
 document.addEventListener("DOMContentLoaded", () => { 
   const pageContainer = document.createElement("section");
   pageContainer.className = "game-page";
@@ -90,8 +60,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const gridAndRowContainer = document.createElement("div");
   gridAndRowContainer.className = "grid-and-row-container";
 
-  const rowClues = createRowClues(size, solutions[0]);
-  const columnClues = createColumnClues(size, solutions[0]);
+  const rowClues = createClues('row', size, solutions[0]);
+  const columnClues = createClues('column', size, solutions[0]);
   const grid = createGrid(size);
 
   gameContainer.append(columnClues);
@@ -105,6 +75,36 @@ document.addEventListener("DOMContentLoaded", () => {
   updateGame(solutions[0]);
 });
 
+// контейнер с правилами
+function createRules(){
+  const descriptionContainer = document.createElement("section");
+  descriptionContainer.className = "description-container container";
+
+  const titleRules = document.createElement("h1");
+  titleRules.className = "rules-title title";
+  titleRules.textContent = "Rules";
+
+  const textRules = document.createElement("ul");
+  textRules.className = "rules-text text"
+
+  const rules = [
+    "You have a grid of squares, which must be filled in black.",
+    "Beside each row of the grid are listed the lengths of black squares on that row.",
+    "Between each length, there must be at least one empty square.",
+    "Your aim is to find all black squares."
+  ];
+
+  rules.forEach(ruleText => {
+    const rule = document.createElement("li");
+    rule.textContent = ruleText;
+    textRules.append(rule)
+  })
+
+  descriptionContainer.append(titleRules);
+  descriptionContainer.append(textRules);
+  document.body.append(descriptionContainer);
+}
+
 function updateGame(solution) {
   // очищаем поле
   const cells = document.querySelectorAll(".cell");
@@ -117,8 +117,8 @@ function updateGame(solution) {
   document.querySelector(".row-clues").remove();
   document.querySelector(".column-clues").remove();
 
-  const rowClues = createRowClues(size, solution);
-  const columnClues = createColumnClues(size, solution);
+  const rowClues = createClues('row', size, solution);
+  const columnClues = createClues('column', size, solution);
 
   const gameContainer = document.querySelector('.game-container');
   const gridAndRowContainer = document.querySelector('.grid-and-row-container');
@@ -219,16 +219,24 @@ function getCurrentGridState(size) {
   );
 }
 
-function createRowClues(size, solution) {
-  const rowClues = document.createElement("div");
-  rowClues.className = "clues row-clues";
-  rowClues.style.gridTemplateRows = `repeat(${size}, 30px)`;
+function createClues(type, size, solution) {
+  const cluesElement = document.createElement("div");
+  cluesElement.className = `clues ${type}-clues`;
+  let clues = [];
 
-  const clues = findRowClues(solution);
+  if (type === 'row') {
+    cluesElement.style.gridTemplateRows = `repeat(${size}, 30px)`;
+    clues = findRowClues(solution);
+  }
+
+  if (type === 'column') {
+    cluesElement.style.gridTemplateColumns = `repeat(${size}, 30px)`;
+    clues = findColumnClues(solution);
+  }
 
   clues.forEach((clue) => {
     const clueContainer = document.createElement("div");
-    clueContainer.className = "clue-container clue-container_row";
+    clueContainer.className = `clue-container clue-container_${type}`;
 
     clue.forEach((number) => {
       const clueCell = document.createElement("div");
@@ -237,34 +245,10 @@ function createRowClues(size, solution) {
       clueContainer.appendChild(clueCell);
     });
 
-    rowClues.appendChild(clueContainer);
+    cluesElement.appendChild(clueContainer);
   });
 
-  return rowClues;
-}
-
-function createColumnClues(size, solution) {
-  const columnClues = document.createElement("div");
-  columnClues.className = "clues column-clues";
-  columnClues.style.gridTemplateColumns = `repeat(${size}, 30px)`;
-
-  const clues = findColumnClues(solution);
-
-  clues.forEach((clue) => {
-    const clueContainer = document.createElement("div");
-    clueContainer.className = "clue-container clue-container_column";
-
-    clue.forEach((number) => {
-      const clueCell = document.createElement("div");
-      clueCell.className = "cell-clue";
-      clueCell.textContent = number;
-      clueContainer.appendChild(clueCell);
-    });
-
-    columnClues.appendChild(clueContainer);
-  });
-
-  return columnClues;
+  return cluesElement;
 }
 
 function checkWin(solution, currentGridState) {
