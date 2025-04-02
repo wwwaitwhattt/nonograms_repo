@@ -31,13 +31,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // контейнер с правилами
   createRules();
 
-  // кнопка очистить
-  const clearButton = createButtonClear();
-  pageContainer.append(clearButton);
-
   // выбор картинки
   const buttonContainer = createButtonContainer(); 
   pageContainer.append(buttonContainer);
+
+  // кнопка очистить
+  const clearButton = createButtonClear();
+  pageContainer.append(clearButton);
 
   // контейнер с игрой
   const gameContainer = createGameContainer();
@@ -228,11 +228,12 @@ function findColumnClues(solution) {
 function getCurrentGridState(size) {
   const cells = document.querySelectorAll(".cell");
   
-  return Array.from({ length: size }, (_, row) =>
+  const currentState = Array.from({ length: size }, (_, row) =>
     Array.from({ length: size }, (_, col) =>
       cells[row * size + col].classList.contains("filled") ? 1 : 0
     )
   );
+  return currentState
 }
 
 function createClues(type, size, solution) {
