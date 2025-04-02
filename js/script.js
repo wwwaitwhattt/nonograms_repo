@@ -68,14 +68,18 @@ function createRules(){
     "Your aim is to find all black squares."
   ];
 
+  const fragment = document.createDocumentFragment();
+
   rules.forEach(ruleText => {
     const rule = document.createElement("li");
     rule.textContent = ruleText;
-    textRules.append(rule)
+    fragment.append(rule);
   })
+  textRules.append(fragment);
 
   descriptionContainer.append(titleRules);
   descriptionContainer.append(textRules);
+
   document.body.append(descriptionContainer);
 }
 
@@ -90,16 +94,17 @@ function createButtonClear(){
 function createButtonContainer() {
   const buttonContainer = document.createElement("div");
   buttonContainer.className = "solutions-container container";
+  const fragment = document.createDocumentFragment();
 
   solutions.forEach((solution, index) => {
     const button = document.createElement("button");
     button.className = "button button-solution";
     button.textContent = `picture ${index + 1}`;
-    button.addEventListener("click", () => updateGame(solution))
-    buttonContainer.appendChild(button);
+    button.addEventListener("click", () => updateGame(solution));
+    fragment.append(button);
   });
-
-  return buttonContainer
+  buttonContainer.append(fragment);
+  return buttonContainer;
 }
 
 function createGameContainer(){
@@ -181,13 +186,14 @@ function createGrid(size) {
   grid.className = "grid";
   grid.style.gridTemplateColumns = `repeat(${size}, 30px)`;
   grid.style.gridTemplateRows = `repeat(${size}, 30px)`;
+  const fragment = document.createDocumentFragment();
 
   for (let i = 0; i < size * size; i++) {
     const cell = document.createElement("div");
     cell.className = "cell";
-    grid.appendChild(cell);
+    fragment.append(cell);
   }
-
+  grid.append(fragment);
   return grid;
 }
 
@@ -254,15 +260,16 @@ function createClues(type, size, solution) {
   clues.forEach((clue) => {
     const clueContainer = document.createElement("div");
     clueContainer.className = `clue-container clue-container_${type}`;
+    const fragment = document.createDocumentFragment();
 
     clue.forEach((number) => {
       const clueCell = document.createElement("div");
       clueCell.className = "cell-clue";
       clueCell.textContent = number;
-      clueContainer.appendChild(clueCell);
+      fragment.append(clueCell);
     });
-
-    cluesElement.appendChild(clueContainer);
+    clueContainer.append(fragment);
+    cluesElement.append(clueContainer);
   });
 
   return cluesElement;
