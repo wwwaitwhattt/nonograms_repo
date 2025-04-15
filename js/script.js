@@ -1,28 +1,20 @@
-const solutions = [
-  [
-    [1, 0, 1, 0, 1],
-    [0, 0, 1, 0, 0],
-    [1, 0, 0, 0, 1],
-    [0, 0, 1, 0, 0],
-    [1, 1, 1, 1, 1],
-  ],
-  [
-    [1, 1, 0, 0, 1],
-    [0, 1, 0, 1, 0],
-    [1, 0, 1, 0, 1],
-    [0, 1, 0, 1, 0],
-    [1, 0, 0, 0, 1],
-  ],
-  [
-    [0, 1, 0, 1, 0],
-    [1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1],
-    [0, 1, 1, 1, 0],
-    [0, 0, 1, 0, 0],
-  ],
-];
+const size = 5 + Math.round(Math.random()*3);
 
-const size = 5; 
+// заполненность от 20 до 70 процентов
+function generateSolution(size){
+  let solution = [];
+  const min = 0.2;
+  const max = 0.7;
+  const fill = min + Math.random() * (max - min);
+  for (row = 0; row < size; row++){
+      const row = []
+      for (col = 0; col < size; col++){
+          row.push(Math.random() < fill ? 1 : 0);
+      }
+      solution.push(row);
+  }
+  return solution
+};
 
 document.addEventListener("DOMContentLoaded", () => { 
   const pageContainer = document.createElement("section");
@@ -30,23 +22,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // контейнер с правилами
   createRules();
-
-  // выбор картинки
-  const buttonContainer = createButtonContainer(); 
-  pageContainer.append(buttonContainer);
-
-  // кнопка очистить
+  
+  // очистить
   const clearButton = createButtonClear();
   pageContainer.append(clearButton);
 
   // контейнер с игрой
-  const gameContainer = createGameContainer();
+  const gameContainer = createGameContainer(generateSolution(size));
   pageContainer.append(gameContainer);
 
   document.body.append(pageContainer);
 
-  // запускаем игру с первой картинкой
-  updateGame(solutions[0]);
+  updateGame(solution);
 });
 
 // контейнер с правилами
@@ -91,31 +78,15 @@ function createButtonClear(){
   return clearButton
 }
 
-function createButtonContainer() {
-  const buttonContainer = document.createElement("div");
-  buttonContainer.className = "solutions-container container";
-  const fragment = document.createDocumentFragment();
-
-  solutions.forEach((solution, index) => {
-    const button = document.createElement("button");
-    button.className = "button button-solution";
-    button.textContent = `picture ${index + 1}`;
-    button.addEventListener("click", () => updateGame(solution));
-    fragment.append(button);
-  });
-  buttonContainer.append(fragment);
-  return buttonContainer;
-}
-
-function createGameContainer(){
+function createGameContainer(solution){
   const gameContainer = document.createElement("div");
   gameContainer.className = "game-container container";
   
   const gridAndRowContainer = document.createElement("div");
   gridAndRowContainer.className = "grid-and-row-container";
 
-  const rowClues = createClues('row', size, solutions[0]);
-  const columnClues = createClues('column', size, solutions[0]);
+  const rowClues = createClues('row', size, solution);
+  const columnClues = createClues('column', size, solution);
   const grid = createGrid(size);
 
   gameContainer.append(columnClues);
@@ -213,7 +184,6 @@ function findClue(line) {
   if (count > 0) {
     clue.push(count);
   }
-  console.log(clue);
   return clue;
 }
 
@@ -271,7 +241,6 @@ function createClues(type, size, solution) {
     clueContainer.append(fragment);
     cluesElement.append(clueContainer);
   });
-
   return cluesElement;
 }
 
