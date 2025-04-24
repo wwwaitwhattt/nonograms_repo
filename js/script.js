@@ -15,44 +15,88 @@ function generateSolution(size){
   }
   return solution
 };
+class ObjectElement {
+  constructor({tag, classList, text, children = [], onClick, gridSize}) {
+    this.el = document.createElement(tag);
+    this.el.classList.add(...classList);
+    
+    if (text instanceof Node) {
+      this.el.append(text)
+    } else {
+      this.el.textContent = text;
+    }
+     
+    children.forEach(child => {
+      this.addChild(child)
+    })
+
+    this.gridSize = gridSize;
+
+    if (typeof onClick === 'function') {
+      this.el.addEventListener('click', onClick);
+    };
+  }
+
+  addChild(child) {
+    if (child instanceof Node){
+      this.el.append(child);
+    } else {
+      this.el.append(child.el);
+    }
+  }
+
+  setText(text) {
+    this.el.textContent = text;
+  }
+
+  setRow(gridSize){
+    this.el.style.gridTemplateRows = `repeat(${gridSize}, 30px)`;
+  }
+
+  setCol(gridSize){
+    this.el.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`;
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => { 
-  const pageContainer = document.createElement("section");
-  pageContainer.className = "game-page";
+  const pageContainer = new ObjectElement({
+    tag: 'section',
+    classList: ['game-page'],
+  });
 
   // контейнер с правилами
   createRules();
   
   // очистить
-  const clearButton = createButtonClear();
-  pageContainer.append(clearButton);
+  pageContainer.addChild(createButtonClear());
 
   // контейнер с игрой
   const gameContainer = createGameContainer(generateSolution(size));
-  pageContainer.append(gameContainer);
+  pageContainer.addChild(gameContainer);
 
-  document.body.append(pageContainer);
+  document.body.append(pageContainer.el);
 
-  updateGame(solution);
+  updateGame(generateSolution(size)); 
 });
 
 // контейнер с правилами
 function createRules(){
-  const descriptionContainer = document.createElement("section");
-  descriptionContainer.className = "description-container container";
+  const sectionObject = new ObjectElement ({
+    tag: 'section',
+    classList: ['description-container', 'container'],
+  });
 
-  const titleRules = document.createElement("h1");
-  titleRules.className = "rules-title title";
-  titleRules.textContent = "Rules";
-
-  const textRules = document.createElement("ul");
-  textRules.className = "rules-text text"
+  const titleObject = new ObjectElement({
+    tag: 'h2',
+    classList: ['rules-title', 'title'],
+    text: 'Rules',
+  });
 
   const rules = [
     "You have a grid of squares, which must be filled in black.",
     "Beside each row of the grid are listed the lengths of black squares on that row.",
     "Between each length, there must be at least one empty square.",
-    "Your aim is to find all black squares."
+    "Your aim is to find all black squares.",
   ];
 
   const fragment = document.createDocumentFragment();
@@ -62,37 +106,51 @@ function createRules(){
     rule.textContent = ruleText;
     fragment.append(rule);
   })
-  textRules.append(fragment);
 
-  descriptionContainer.append(titleRules);
-  descriptionContainer.append(textRules);
+  const textObject = new ObjectElement({
+    tag: 'ul',
+    classList: ['rules-text', 'text'],
+    text: fragment,
+  })
 
-  document.body.append(descriptionContainer);
+  sectionObject.addChild(titleObject);
+  sectionObject.addChild(textObject);
+
+  document.body.append(sectionObject.el);
+
 }
 
 function createButtonClear(){
-  const clearButton = document.createElement("button");
-  clearButton.className = "button button-clear";
-  clearButton.textContent = "Clear";
-  clearButton.addEventListener("click", clearAll);
+  const clearButton = new ObjectElement({
+    tag: 'button',
+    classList: ['button', 'button-clear'],
+    text: 'Clear',
+    onClick() {
+        clearAll()
+    },
+  });
   return clearButton
 }
 
 function createGameContainer(solution){
-  const gameContainer = document.createElement("div");
-  gameContainer.className = "game-container container";
+  const gameContainer = new ObjectElement({
+    tag: 'div',
+    classList: ['game-container', 'container'],
+  })
   
-  const gridAndRowContainer = document.createElement("div");
-  gridAndRowContainer.className = "grid-and-row-container";
+  const gridAndRowContainer = new ObjectElement({
+    tag: 'div',
+    classList: ['grid-and-row-container'],
+  })
 
   const rowClues = createClues('row', size, solution);
   const columnClues = createClues('column', size, solution);
   const grid = createGrid(size);
 
-  gameContainer.append(columnClues);
-  gridAndRowContainer.append(rowClues);
-  gridAndRowContainer.append(grid);
-  gameContainer.append(gridAndRowContainer);
+  gameContainer.addChild(columnClues);
+  gridAndRowContainer.addChild(rowClues);
+  gridAndRowContainer.addChild(grid);
+  gameContainer.addChild(gridAndRowContainer);
 
   return gameContainer
 }
@@ -115,8 +173,8 @@ function updateGame(solution) {
   const gameContainer = document.querySelector('.game-container');
   const gridAndRowContainer = document.querySelector('.grid-and-row-container');
 
-  gameContainer.prepend(columnClues);
-  gridAndRowContainer.prepend(rowClues); 
+  gameContainer.prepend(columnClues.el);
+  gridAndRowContainer.prepend(rowClues.el);
 
   cells.forEach((cell) => {
     cell.addEventListener("click", () => {
@@ -153,18 +211,25 @@ function clearAll(){
 }
 
 function createGrid(size) {
-  const grid = document.createElement("div");
-  grid.className = "grid";
-  grid.style.gridTemplateColumns = `repeat(${size}, 30px)`;
-  grid.style.gridTemplateRows = `repeat(${size}, 30px)`;
+  const grid = new ObjectElement({
+    tag: 'div',
+    classList: ['grid'],
+  })
+
+  grid.setRow(size);
+  grid.setCol(size);
+
   const fragment = document.createDocumentFragment();
 
   for (let i = 0; i < size * size; i++) {
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    fragment.append(cell);
+    const cell = new ObjectElement({
+      tag: 'div',
+      classList: ['cell'],
+    })
+    
+    fragment.append(cell.el);
   }
-  grid.append(fragment);
+  grid.addChild(fragment);
   return grid;
 }
 
@@ -213,33 +278,41 @@ function getCurrentGridState(size) {
 }
 
 function createClues(type, size, solution) {
-  const cluesElement = document.createElement("div");
-  cluesElement.className = `clues ${type}-clues`;
+  const cluesElement = new ObjectElement({
+    tag: 'div',
+    classList: ['clues', `${type}-clues`],
+  })
+
   let clues = [];
 
   if (type === 'row') {
-    cluesElement.style.gridTemplateRows = `repeat(${size}, 30px)`;
+    cluesElement.setRow(size);
     clues = findRowClues(solution);
   }
 
   if (type === 'column') {
-    cluesElement.style.gridTemplateColumns = `repeat(${size}, 30px)`;
+    cluesElement.setCol(size);
     clues = findColumnClues(solution);
   }
 
   clues.forEach((clue) => {
-    const clueContainer = document.createElement("div");
-    clueContainer.className = `clue-container clue-container_${type}`;
+    const clueContainer = new ObjectElement({
+      tag: 'div',
+      classList: ['clue-container', `clue-container_${type}`]
+    })
+
     const fragment = document.createDocumentFragment();
 
     clue.forEach((number) => {
-      const clueCell = document.createElement("div");
-      clueCell.className = "cell-clue";
-      clueCell.textContent = number;
-      fragment.append(clueCell);
+      const clueCell = new ObjectElement({
+        tag: 'div',
+        classList: ['cell-clue'],
+        text: number, 
+      })
+      fragment.append(clueCell.el);
     });
-    clueContainer.append(fragment);
-    cluesElement.append(clueContainer);
+    clueContainer.addChild(fragment);
+    cluesElement.addChild(clueContainer);
   });
   return cluesElement;
 }
