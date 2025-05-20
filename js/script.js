@@ -15,25 +15,28 @@ function generateSolution(size){
   }
   return solution
 };
+
 class ObjectElement {
-  constructor({tag, classList, text, children = [], onClick, gridSize}) {
-    this.el = document.createElement(tag);
-    this.el.classList.add(...classList);
-    
-    if (text instanceof Node) {
-      this.el.append(text)
-    } else {
-      this.el.textContent = text;
-    }
-     
-    children.forEach(child => {
+  constructor({tag, classList, text, children = [], onClick}) {
+    this.init();
+    this.tag = tag;
+    this.classList = classList;
+    this.text = text;
+    this.children = children;
+    this.onClick = onClick;
+    // this.gridSize = gridSize; специфичный. лучше создать отдельный класс
+  }
+
+  init() {
+    this.el = document.createElement(this.tag);
+    this.el.classList.add(...this.classList);
+
+    this.children.forEach(child => {
       this.addChild(child)
-    })
+    });
 
-    this.gridSize = gridSize;
-
-    if (typeof onClick === 'function') {
-      this.el.addEventListener('click', onClick);
+    if (typeof this.onClick === 'function') {
+      this.el.addEventListener('click', this.onClick);
     };
   }
 
@@ -45,16 +48,58 @@ class ObjectElement {
     }
   }
 
-  setText(text) {
-    this.el.textContent = text;
+  set Text(value) {
+    if (value instanceof Node) {
+      this.el.append(value)
+    } else {
+      this.el.textContent = value;
+    };
   }
 
-  setRow(gridSize){
-    this.el.style.gridTemplateRows = `repeat(${gridSize}, 30px)`;
+  get Text() {
+    return this.text;
   }
 
-  setCol(gridSize){
-    this.el.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`;
+  // set Row(gridSize){
+  //   this.el.style.gridTemplateRows = `repeat(${gridSize}, 30px)`;  отдельный класс
+  // }
+
+  // set Col(gridSize){
+  //   this.el.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`; отдельный класс
+  // }
+}
+
+class GridElement {
+  constructor() {
+
+  }
+}
+
+
+class DescriptionBlock {
+  constructor({ titleText, rulesText }) {
+    this.section = new ObjectElement({
+      tag: 'section',
+      classList: ['description-container', 'container'],
+    });
+
+    this.title = new ObjectElement({
+      tag: 'h2',
+      classList: ['rules-title', 'title'],
+      text: titleText,
+    });
+
+    this.text = new ObjectElement({
+      tag: 'ul',
+      classList: ['rules-text', 'text'],
+      text: rulesText,
+    });
+
+    this.section.addChild(this.title);
+  }
+
+  getElement() {
+    return this.section;
   }
 }
 
@@ -81,16 +126,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // контейнер с правилами
 function createRules(){
-  const sectionObject = new ObjectElement ({
-    tag: 'section',
-    classList: ['description-container', 'container'],
-  });
+  // const sectionObject = new ObjectElement ({
+  //   tag: 'section',
+  //   classList: ['description-container', 'container'],
+  // });
 
-  const titleObject = new ObjectElement({
-    tag: 'h2',
-    classList: ['rules-title', 'title'],
-    text: 'Rules',
-  });
+  // const titleObject = new ObjectElement({
+  //   tag: 'h2',
+  //   classList: ['rules-title', 'title'],
+  //   text: 'Rules',
+  // });
 
   const rules = [
     "You have a grid of squares, which must be filled in black.",
@@ -107,16 +152,25 @@ function createRules(){
     fragment.append(rule);
   })
 
-  const textObject = new ObjectElement({
-    tag: 'ul',
-    classList: ['rules-text', 'text'],
-    text: fragment,
+  console.log(fragment);
+
+  const descriptionContainer = new DescriptionBlock({
+    titleText: 'Rules',
+    rulesText: fragment,
   })
 
-  sectionObject.addChild(titleObject);
-  sectionObject.addChild(textObject);
+  // const textObject = new ObjectElement({
+  //   tag: 'ul',
+  //   classList: ['rules-text', 'text'],
+  //   text: fragment,
+  // })
 
-  document.body.append(sectionObject.el);
+  // sectionObject.addChild(titleObject);
+  // sectionObject.addChild(textObject);
+
+  // document.body.append(sectionObject.el);
+
+  document.body.append(descriptionContainer);
 
 }
 
