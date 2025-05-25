@@ -30,6 +30,12 @@ class ObjectElement {
     this.el = document.createElement(this.tag);
     this.el.classList.add(...this.classList); 
 
+    if (this.text instanceof Node) { // без этой проверки элементы не добавляются в document fragment (см. функцию createClues)
+      this.el.append(this.text)
+    } else {
+      this.el.textContent = this.text;
+    };
+
     if (typeof this.onClick === 'function') {
       this.el.addEventListener('click', this.onClick);
     };
@@ -42,18 +48,6 @@ class ObjectElement {
       this.el.append(child.el);
     }
   }
-
-  set Text(value) {
-    if (value instanceof Node) {
-      this.el.append(value)
-    } else {
-      this.el.textContent = value;
-    };
-  }
-
-  get Text() {
-    return this.text;
-  }
 }
 
 class GridElement extends ObjectElement {
@@ -62,36 +56,25 @@ class GridElement extends ObjectElement {
     this.gridSize = gridSize;
   }
 
-  Row(gridSize){
+  set Row(gridSize){
     this.el.style.gridTemplateRows = `repeat(${gridSize}, 30px)`;
   }
 
-  Col(gridSize){
+  set Col(gridSize){
     this.el.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`;
   }
 }
 
 
-class DescriptionBlock {
-  constructor({ titleText, rulesText }) {
-    this.section = new ObjectElement({
-      tag: 'section',
-      classList: ['description-container', 'container'],
-    });
+class DescriptionBlockElement extends ObjectElement{
+  constructor(tag, classList, titleText, rulesText) {
+    super(tag, classList);
+    this.titleText = titleText;
+    this.rulesText = rulesText;
+  };
 
-    this.title = new ObjectElement({
-      tag: 'h2',
-      classList: ['rules-title', 'title'],
-      text: titleText,
-    });
-
-    this.text = new ObjectElement({
-      tag: 'ul',
-      classList: ['rules-text', 'text'],
-      text: rulesText,
-    });
-
-    this.section.addChild(this.title);
+  init() {
+    super.init()
   }
 
   getElement() {
@@ -122,16 +105,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // контейнер с правилами
 function createRules(){
-  // const sectionObject = new ObjectElement ({
-  //   tag: 'section',
-  //   classList: ['description-container', 'container'],
-  // });
+  const sectionObject = new DescriptionBlockElement ({
+    tag: 'section',
+    classList: ['description-container', 'container'],
+  });
 
-  // const titleObject = new ObjectElement({
-  //   tag: 'h2',
-  //   classList: ['rules-title', 'title'],
-  //   text: 'Rules',
-  // });
+  const titleObject = new DescriptionBlockElement({
+    tag: 'h2',
+    classList: ['rules-title', 'title'],
+    text: 'Rules',
+  });
 
   const rules = [
     "You have a grid of squares, which must be filled in black.",
@@ -148,26 +131,21 @@ function createRules(){
     fragment.append(rule);
   })
 
-  console.log(fragment);
-
-  const descriptionContainer = new DescriptionBlock({
+  const descriptionContainer = new DescriptionBlockElement({
     titleText: 'Rules',
     rulesText: fragment,
   })
 
-  // const textObject = new ObjectElement({
-  //   tag: 'ul',
-  //   classList: ['rules-text', 'text'],
-  //   text: fragment,
-  // })
+  const textObject = new DescriptionBlockElement({
+    tag: 'ul',
+    classList: ['rules-text', 'text'],
+    text: fragment,
+  })
 
-  // sectionObject.addChild(titleObject);
-  // sectionObject.addChild(textObject);
+  sectionObject.addChild(titleObject);
+  sectionObject.addChild(textObject);
 
-  // document.body.append(sectionObject.el);
-
-  document.body.append(descriptionContainer);
-
+  document.body.append(sectionObject.el);  
 }
 
 function createButtonClear(){
@@ -266,8 +244,8 @@ function createGrid(size) {
     classList: ['grid'],
   })
 
-  grid.Row(size);
-  grid.Col(size);
+  grid.Row = size;
+  grid.Col = size;
 
   const fragment = document.createDocumentFragment();
 
@@ -336,12 +314,12 @@ function createClues(type, size, solution) {
   let clues = [];
 
   if (type === 'row') {
-    cluesElement.Row(size)
+    cluesElement.Row = size;
     clues = findRowClues(solution);
   }
 
   if (type === 'column') {
-    cluesElement.Col(size);
+    cluesElement.Col = size;
     clues = findColumnClues(solution);
   }
 
