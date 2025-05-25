@@ -22,23 +22,30 @@ class ObjectElement {
     this.classList = classList;
     this.text = text;
     this.onClick = onClick;
+    this.children = [];
 
-    this.init();
+    this.#init();
   }
 
-  init() {
+  #init() {
     this.el = document.createElement(this.tag);
     this.el.classList.add(...this.classList); 
-
-    if (this.text instanceof Node) { // без этой проверки элементы не добавляются в document fragment (см. функцию createClues)
-      this.el.append(this.text)
-    } else {
-      this.el.textContent = this.text;
-    };
 
     if (typeof this.onClick === 'function') {
       this.el.addEventListener('click', this.onClick);
     };
+  }
+
+  set Text(value){
+    if (value instanceof Node) { // без этой проверки document fragment не добавится к элементу (тк это кусок dom дерева)
+      this.el.append(value)
+    } else {
+      this.el.textContent = value;
+    };
+  }
+
+  get Text(){
+    return this.el.textContent;
   }
 
   addChild(child) {
@@ -46,6 +53,7 @@ class ObjectElement {
       this.el.append(child);
     } else {
       this.el.append(child.el);
+      this.children.push(child)
     }
   }
 }
@@ -62,23 +70,6 @@ class GridElement extends ObjectElement {
 
   set Col(gridSize){
     this.el.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`;
-  }
-}
-
-
-class DescriptionBlockElement extends ObjectElement{
-  constructor(tag, classList, titleText, rulesText) {
-    super(tag, classList);
-    this.titleText = titleText;
-    this.rulesText = rulesText;
-  };
-
-  init() {
-    super.init()
-  }
-
-  getElement() {
-    return this.section;
   }
 }
 
@@ -105,16 +96,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // контейнер с правилами
 function createRules(){
-  const sectionObject = new DescriptionBlockElement ({
+  const sectionObject = new ObjectElement({
     tag: 'section',
     classList: ['description-container', 'container'],
   });
 
-  const titleObject = new DescriptionBlockElement({
+  const titleObject = new ObjectElement({
     tag: 'h2',
     classList: ['rules-title', 'title'],
-    text: 'Rules',
   });
+
+  titleObject.Text = 'Rules';
+
+  const textObject = new ObjectElement({
+    tag: 'ul',
+    classList: ['rules-text', 'text'],
+  })
 
   const rules = [
     "You have a grid of squares, which must be filled in black.",
@@ -123,27 +120,18 @@ function createRules(){
     "Your aim is to find all black squares.",
   ];
 
-  const fragment = document.createDocumentFragment();
-
   rules.forEach(ruleText => {
-    const rule = document.createElement("li");
-    rule.textContent = ruleText;
-    fragment.append(rule);
-  })
-
-  const descriptionContainer = new DescriptionBlockElement({
-    titleText: 'Rules',
-    rulesText: fragment,
-  })
-
-  const textObject = new DescriptionBlockElement({
-    tag: 'ul',
-    classList: ['rules-text', 'text'],
-    text: fragment,
+    const rule = new ObjectElement({
+      tag: 'li',
+    });
+    rule.Text = ruleText;
+    textObject.addChild(rule);
   })
 
   sectionObject.addChild(titleObject);
   sectionObject.addChild(textObject);
+
+  console.log(sectionObject.children);
 
   document.body.append(sectionObject.el);  
 }
@@ -152,11 +140,13 @@ function createButtonClear(){
   const clearButton = new ObjectElement({
     tag: 'button',
     classList: ['button', 'button-clear'],
-    text: 'Clear',
     onClick() {
         clearAll()
     },
   });
+
+  clearButton.Text = 'Clear';
+
   return clearButton
 }
 
@@ -335,8 +325,8 @@ function createClues(type, size, solution) {
       const clueCell = new ObjectElement({
         tag: 'div',
         classList: ['cell-clue'],
-        text: number, 
       })
+      clueCell.Text = number;
       fragment.append(clueCell.el);
     });
     clueContainer.addChild(fragment);
