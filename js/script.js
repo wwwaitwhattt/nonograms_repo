@@ -17,23 +17,18 @@ function generateSolution(size){
 };
 
 class ObjectElement {
-  constructor({tag, classList, text, children = [], onClick}) {
-    this.init();
+  constructor({tag, classList = [], text, onClick}) {
     this.tag = tag;
     this.classList = classList;
     this.text = text;
-    this.children = children;
     this.onClick = onClick;
-    // this.gridSize = gridSize; специфичный. лучше создать отдельный класс
+
+    this.init();
   }
 
   init() {
     this.el = document.createElement(this.tag);
-    this.el.classList.add(...this.classList);
-
-    this.children.forEach(child => {
-      this.addChild(child)
-    });
+    this.el.classList.add(...this.classList); 
 
     if (typeof this.onClick === 'function') {
       this.el.addEventListener('click', this.onClick);
@@ -59,19 +54,20 @@ class ObjectElement {
   get Text() {
     return this.text;
   }
-
-  // set Row(gridSize){
-  //   this.el.style.gridTemplateRows = `repeat(${gridSize}, 30px)`;  отдельный класс
-  // }
-
-  // set Col(gridSize){
-  //   this.el.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`; отдельный класс
-  // }
 }
 
-class GridElement {
-  constructor() {
+class GridElement extends ObjectElement {
+  constructor(tag, classList = [], text, onClick, gridSize) {
+    super(tag, classList, text, onClick)
+    this.gridSize = gridSize;
+  }
 
+  Row(gridSize){
+    this.el.style.gridTemplateRows = `repeat(${gridSize}, 30px)`;
+  }
+
+  Col(gridSize){
+    this.el.style.gridTemplateColumns = `repeat(${gridSize}, 30px)`;
   }
 }
 
@@ -265,13 +261,13 @@ function clearAll(){
 }
 
 function createGrid(size) {
-  const grid = new ObjectElement({
+  const grid = new GridElement({
     tag: 'div',
     classList: ['grid'],
   })
 
-  grid.setRow(size);
-  grid.setCol(size);
+  grid.Row(size);
+  grid.Col(size);
 
   const fragment = document.createDocumentFragment();
 
@@ -332,7 +328,7 @@ function getCurrentGridState(size) {
 }
 
 function createClues(type, size, solution) {
-  const cluesElement = new ObjectElement({
+  const cluesElement = new GridElement({
     tag: 'div',
     classList: ['clues', `${type}-clues`],
   })
@@ -340,12 +336,12 @@ function createClues(type, size, solution) {
   let clues = [];
 
   if (type === 'row') {
-    cluesElement.setRow(size);
+    cluesElement.Row(size)
     clues = findRowClues(solution);
   }
 
   if (type === 'column') {
-    cluesElement.setCol(size);
+    cluesElement.Col(size);
     clues = findColumnClues(solution);
   }
 
